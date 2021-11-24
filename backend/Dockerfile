@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y gcc g++
 RUN mkdir -p /build/wheels
 
 # Convert our dependencies from poetry to pip format
-COPY pyproject.toml ./poetry.lock* /
+COPY backend/pyproject.toml ./backend/poetry.lock* /
 RUN pip3 install -U pip wheel poetry
 RUN poetry export -f requirements.txt --without-hashes -o /tmp/requirements.txt
 
@@ -26,6 +26,6 @@ RUN pip3 install --no-cache-dir /tmp/wheels/* && rm -rf /tmp/wheels
 
 WORKDIR /app
 
-COPY . /app
+COPY ./backend /app
 
 CMD ["python3", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80"]

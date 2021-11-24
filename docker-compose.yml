@@ -14,7 +14,9 @@ services:
   backend:
     build:
       context: .
+      dockerfile: backend/Dockerfile
     volumes:
       - ./frontend/static:/app/static
       - ./frontend/templates:/app/templates
+      - ./infrastructure/db.sqlite3:/app/db.sqlite3
     restart: unless-stopped
