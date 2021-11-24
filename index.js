@@ -1,31 +1,48 @@
 const citymap = {
   chicago: {
     center: { lat: 41.878, lng: -87.629 },
-    population: 2714856,
   },
   newyork: {
     center: { lat: 40.714, lng: -74.005 },
-    population: 8405837,
   },
   losangeles: {
     center: { lat: 34.052, lng: -118.243 },
-    population: 3857799,
   },
   vancouver: {
     center: { lat: 49.25, lng: -123.1 },
-    population: 603502,
   },
+  helsinki: {
+    center: { lat: 60.192059, lng: 24.945831 },
+  },
+  sydney: { center: { lat: -33.865143, lng: 151.2099 } },
+  devonport: { center: { lat: -41.180557, lng: 146.34639 } },
+  belem: { center: { lat: -1.455833, lng: -48.503887 } },
+  zhangjiajie: { center: { lat: 29.117001, lng: 110.478996 } },
+  makambako: { center: { lat: -8.849012, lng: 34.82806 } },
+  haiphong: { center: { lat: 20.865139, lng: 106.68383 } },
+  toledo: { center: { lat: 39.856667, lng: -4.024444 } },
+  valparaiso: { center: { lat: -33.047237, lng: -71.612686 } },
+  gobabis: { center: { lat: -22.449259, lng: 18.969973 } },
 };
 
 function initMap() {
-  // Create the map.
-  const map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 4,
-    center: { lat: 37.09, lng: -95.712 },
-    mapTypeId: "terrain",
-  });
+  var mymap = L.map("map").setView([36.0, 14.1], 2);
 
-   const contentString =
+  L.tileLayer(
+    "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
+    {
+      attribution:
+        'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 18,
+      id: "mapbox/streets-v11",
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken:
+        "pk.eyJ1Ijoic29tZXVzZXIxMjMiLCJhIjoiY2t3ZGI2eXRiMjVoMzJ2cGFpOTNjcnhocCJ9.nH74RwC0XZc_XAIggzervg",
+    }
+  ).addTo(mymap);
+
+  const contentString =
     '<div id="content">' +
     '<div id="siteNotice">' +
     "</div>" +
@@ -46,29 +63,20 @@ function initMap() {
     "(last visited June 22, 2009).</p>" +
     "</div>" +
     "</div>";
-  let infoWindow = new google.maps.InfoWindow({
-    content: contentString,
-  });
 
-  // Construct the circle for each value in citymap.
-  // Note: We scale the area of the circle based on the population.
   for (const city in citymap) {
-    // Add the circle for this city to the map.
-    let cityCircle = new google.maps.Circle({
-      strokeColor: "#FF0000",
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: "#FF0000",
-      fillOpacity: 0.35,
-      map,
-      center: citymap[city].center,
-      radius: Math.sqrt(citymap[city].population) * 100,
-      clickable: true,
-    });
+    let circle = L.circle(
+      [citymap[city].center["lat"], citymap[city].center["lng"]],
+      {
+        color: "red",
+        fillColor: "#f03",
+        fillOpacity: 0.5,
+        radius: 10000,
+      }
+    ).addTo(mymap);
 
-    cityCircle.addListener("click", () => {
-      infoWindow.setPosition(cityCircle.getCenter());
-      infoWindow.open(map);
-  });
+    circle.bindPopup(contentString);
   }
 }
+
+document.addEventListener("DOMContentLoaded", initMap, false);
