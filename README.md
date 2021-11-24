@@ -1,2 +1,2 @@
-# Pixafarm Assignment
-Assignment for a backlend developer position in Pixafarm
+# PixoFarm Assignment
+Assignment for a backend developer position in [PixoFarm](https://pixofarm.com/)

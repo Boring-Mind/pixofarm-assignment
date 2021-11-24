@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./infrastructure/nginx.conf:/etc/nginx/nginx.conf
+    restart: unless-stopped
+  backend:
+    build:
+      context: .
+    volumes:
+      - ./frontend/static:/app/static
+      - ./frontend/templates:/app/templates
+    restart: unless-stopped
