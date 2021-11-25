@@ -1,15 +1,15 @@
 const citymap = {
   chicago: {
-    center: { lat: 41.878, lng: -87.629, alt: 223},
+    center: { lat: 41.878113, lng: -87.629799, alt: 223},
   },
   newyork: {
-    center: { lat: 40.714, lng: -74.005, alt: 58 },
+    center: { lat: 40.712776, lng: -74.005974, alt: 58 },
   },
   losangeles: {
-    center: { lat: 34.052, lng: -118.243, alt: 89 },
+    center: { lat: 34.052235, lng: -118.243683, alt: 89 },
   },
   vancouver: {
-    center: { lat: 49.25, lng: -123.1, alt: 73 },
+    center: { lat: 49.282730, lng: -123.120735, alt: 73 },
   },
   helsinki: {
     center: { lat: 60.192059, lng: 24.945831, alt: 7},
@@ -23,6 +23,7 @@ const citymap = {
   toledo: { center: { lat: 39.856667, lng: -4.024444, alt: 523 } },
   valparaiso: { center: { lat: -33.047237, lng: -71.612686, alt: 18 } },
   gobabis: { center: { lat: -22.449259, lng: 18.969973, alt: 1441 } },
+  bauchi: { center: { lat: 10.306720, lng: 9.844930, alt: 624 } },
 };
 
 function initMap() {
