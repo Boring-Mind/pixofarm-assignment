@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.responses import JSONResponse
 
+from business_logic.temperature import retrieve_and_store_temperature_for_city
 from db.dal.city import CityDAL
 from db.dal.continent import ContinentNotFound
 from dependencies import get_db_session
@@ -31,6 +32,13 @@ async def create_city(
             altitude=input_data.altitude,
             continent=input_data.continent,
         )
+
+        await retrieve_and_store_temperature_for_city(
+            latitude=input_data.latitude,
+            longitude=input_data.longitude,
+            city_name=input_data.name,
+        )
+
         return JSONResponse(
             {"message": "Created city"}, status_code=status.HTTP_201_CREATED
         )

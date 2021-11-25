@@ -3,8 +3,13 @@ from typing import List, Optional
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from common_exceptions import CommonException
 from db.dal.continent import ContinentDAL
 from db.models import City
+
+
+class CityNotFound(CommonException):
+    _default_message: str = "Cannot find a city with the specified name."
 
 
 class CityDAL:
@@ -14,6 +19,15 @@ class CityDAL:
     async def get_all_cities(self) -> Optional[List[City]]:
         results = await self.session.execute(select(City))
         return results.scalars().all()
+
+    async def get_city_by_name(self, name: str) -> City:
+        results = await self.session.execute(select(City).where(City.name == name))
+        city = results.scalars().first()
+
+        if not city:
+            raise CityNotFound
+
+        return city
 
     async def create_new_city(
         self,

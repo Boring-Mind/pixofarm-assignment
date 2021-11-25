@@ -15,8 +15,9 @@ class Temperature(BaseModel):
     __tablename__ = "temperature"
 
     id = Column(Integer, primary_key=True)
-    temperature = Column(Float, nullable=False)
-    date = Column(DateTime, nullable=False)
+    min = Column(Float, nullable=False)
+    max = Column(Float, nullable=False)
+    mean = Column(Float, nullable=False)
     city = Column(
         Integer,
         ForeignKey("city.id"),

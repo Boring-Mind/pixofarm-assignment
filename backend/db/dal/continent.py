@@ -3,11 +3,12 @@ from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from common_exceptions import CommonException
 from db.models import Continent
 
 
-class ContinentNotFound(Exception):
-    _default_message: str = "Cannot find a continent with that name"
+class ContinentNotFound(CommonException):
+    _default_message: str = "Cannot find a continent with the specified name."
 
 
 class ContinentDAL:
