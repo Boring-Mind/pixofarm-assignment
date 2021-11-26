@@ -18,6 +18,18 @@ async def get_all_cities(db_session: AsyncSession = Depends(get_db_session)):
     return await continent_dal.get_all_cities()
 
 
+@router.delete("/city/{city_id}/")
+async def delete_city(
+    city_id: int,
+    db_session: AsyncSession = Depends(get_db_session),
+):
+    city_dal = CityDAL(db_session)
+    await city_dal.delete_city_by_id(city_id)
+    return JSONResponse(
+        {"message": "Successfully deleted city"}, status_code=status.HTTP_204_NO_CONTENT
+    )
+
+
 @router.post("/city/", response_class=JSONResponse)
 async def create_city(
     input_data: CreateCityIn,

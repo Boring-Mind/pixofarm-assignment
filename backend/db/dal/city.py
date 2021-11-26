@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from common_exceptions import CommonException
@@ -28,6 +28,11 @@ class CityDAL:
             raise CityNotFound
 
         return city
+
+    async def delete_city_by_id(self, city_id: int):
+        query = delete(City).where(City.id == city_id)
+        await self.session.execute(query)
+        await self.session.commit()
 
     async def create_new_city(
         self,

@@ -18,6 +18,7 @@ class Temperature(BaseModel):
     min = Column(Float, nullable=False)
     max = Column(Float, nullable=False)
     mean = Column(Float, nullable=False)
+    date = Column(DateTime, nullable=False)
     city = Column(
         Integer,
         ForeignKey("city.id"),

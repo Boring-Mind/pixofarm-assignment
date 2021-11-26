@@ -11,9 +11,6 @@ async def retrieve_and_store_temperature_for_city(
 
     async with async_db_session() as session:
         temperature_dal = TemperatureDAL(session)
-        await temperature_dal.set_temperature_for_city(
-            min=temperature_data.min_temp,
-            max=temperature_data.max_temp,
-            mean=temperature_data.mean_temp,
-            city=city_name,
+        await temperature_dal.insert_multiple_temperatures_for_city(
+            temperature_data, city_name
         )
