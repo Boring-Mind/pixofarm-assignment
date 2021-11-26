@@ -21,7 +21,7 @@ class TemperatureDAL:
         self, city_id: int
     ) -> Optional[List[Temperature]]:
         return await self._get_temperature_for_(
-            select(Temperature).filter(Temperature.city == city_id)
+            select(Temperature).filter(Temperature.city_id == city_id)
         )
 
     async def get_temperature_for_cities(
@@ -29,9 +29,13 @@ class TemperatureDAL:
     ) -> Optional[List[Temperature]]:
         query = (
             select(Temperature)
-            .join(City, Temperature.city == City.id)
+            .join(City, Temperature.city_id == City.id)
             .filter(City.name.in_(city_names))
         )
+        return await self._get_temperature_for_(query)
+
+    async def get_temperature_for_all_cities(self) -> Optional[List[Temperature]]:
+        query = select(Temperature).join(City, Temperature.city_id == City.id)
         return await self._get_temperature_for_(query)
 
     async def set_temperature_for_city(

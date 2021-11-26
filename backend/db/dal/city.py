@@ -50,13 +50,14 @@ class CityDAL:
         if isinstance(continent, str):
             continent_dal = ContinentDAL(self.session)
             continent = await continent_dal.get_continent_by_name(continent)
+            continent = continent.id
 
         query = insert(City).values(
             name=name,
             latitude=latitude,
             longitude=longitude,
             altitude=altitude,
-            continent=continent,
+            continent_id=continent,
         )
 
         await self.session.execute(query)
