@@ -20,3 +20,6 @@ services:
       - ./frontend/templates:/app/templates
       - ./infrastructure/db.sqlite3:/app/db.sqlite3
     restart: unless-stopped
+  redis:
+    image: redis:alpine
+    restart: unless-stopped

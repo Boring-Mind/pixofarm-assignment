@@ -13,12 +13,16 @@ class TemperatureDAL:
     def __init__(self, db_session: AsyncSession):
         self.session = db_session
 
+    async def _get_temperature_for_(self, query) -> Optional[List[Temperature]]:
+        results = await self.session.execute(query)
+        return results.scalars().all()
+
     async def get_temperature_for_city_id(
         self, city_id: int
     ) -> Optional[List[Temperature]]:
-        query = select(Temperature).filter(Temperature.city == city_id)
-        results = await self.session.execute(query)
-        return results.scalars().all()
+        return await self._get_temperature_for_(
+            select(Temperature).filter(Temperature.city == city_id)
+        )
 
     async def get_temperature_for_cities(
         self, city_names: Iterable[str]
@@ -28,8 +32,7 @@ class TemperatureDAL:
             .join(City, Temperature.city == City.id)
             .filter(City.name.in_(city_names))
         )
-        results = await self.session.execute(query)
-        return results.scalars().all()
+        return await self._get_temperature_for_(query)
 
     async def set_temperature_for_city(
         self, min: float, max: float, mean: float, date: datetime, city: str | int

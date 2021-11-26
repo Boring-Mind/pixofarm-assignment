@@ -1,5 +1,6 @@
-from db.config import BaseModel
 from sqlalchemy import Column, Integer, Float, ForeignKey, Text, DateTime
+
+from db.config import BaseModel
 
 
 class Continent(BaseModel):

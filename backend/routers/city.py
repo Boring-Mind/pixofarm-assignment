@@ -26,7 +26,8 @@ async def delete_city(
     city_dal = CityDAL(db_session)
     await city_dal.delete_city_by_id(city_id)
     return JSONResponse(
-        {"message": "Successfully deleted city"}, status_code=status.HTTP_204_NO_CONTENT
+        {"message": "Successfully deleted the city"},
+        status_code=status.HTTP_204_NO_CONTENT,
     )
 
 
@@ -52,7 +53,7 @@ async def create_city(
         )
 
         return JSONResponse(
-            {"message": "Created city"}, status_code=status.HTTP_201_CREATED
+            {"message": "City was created"}, status_code=status.HTTP_201_CREATED
         )
     except ContinentNotFound:
         raise HTTPException(

@@ -3,7 +3,7 @@ from typing import List, Any, Dict
 
 from aiohttp import ClientSession
 
-from common_exceptions import CommonExceptionWithResponse
+from utils.common_exceptions import CommonExceptionWithResponse
 from settings import Settings
 
 

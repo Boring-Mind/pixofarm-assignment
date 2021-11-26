@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlalchemy import select, insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from common_exceptions import CommonException
+from utils.common_exceptions import CommonException
 from db.dal.continent import ContinentDAL
 from db.models import City
 

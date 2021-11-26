@@ -3,8 +3,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from routers.continent import router as continent_router
 from routers.city import router as city_router
+from routers.continent import router as continent_router
 from routers.temperature import router as temperature_router
 
 app = FastAPI()
