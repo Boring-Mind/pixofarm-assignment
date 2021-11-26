@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+from typing import List
+
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
@@ -14,3 +16,12 @@ async def get_temperature_for_the_city(
 ):
     temperature_dal = TemperatureDAL(db_session)
     return await temperature_dal.get_temperature_for_city_id(city_id)
+
+
+@router.get("/temperature/cities/", response_class=JSONResponse)
+async def get_temperature_for_specified_cities(
+    city_names: List[str] = Query(None),
+    db_session: AsyncSession = Depends(get_db_session),
+):
+    temperature_dal = TemperatureDAL(db_session)
+    return await temperature_dal.get_temperature_for_cities(city_names)
