@@ -38,12 +38,10 @@ async def get_correlation_between_temperature_and_altitude(
     if cached_result := await redis.get(Settings.CORRELATION_CACHE_KEY):
         return cached_result
 
-    # ToDo: fix issues with non-consumed column
-    # ToDo: research more about sqlalchemy relationship
     result = await Correlation.get_correlation_between_altitude_and_temperature(
         db_session
     )
     await redis.set(
         Settings.CORRELATION_CACHE_KEY, result, ex=Settings.CORRELATION_CACHE_EXP
     )
-    return {"correlation": str(result)}
+    return {"correlation": round(result, 4)}

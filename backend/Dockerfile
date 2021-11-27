@@ -9,6 +9,9 @@ COPY backend/pyproject.toml ./backend/poetry.lock* /
 RUN pip3 install -U pip wheel poetry
 RUN poetry export -f requirements.txt --without-hashes -o /tmp/requirements.txt
 
+# Uninstalling poetry because it's not needed anymore
+RUN pip3 uninstall poetry -y
+
 # Compile all our dependencies into one wheel
 RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 

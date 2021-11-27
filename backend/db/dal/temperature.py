@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List, Iterable
 
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, orm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.dal.city import CityDAL
@@ -31,11 +31,17 @@ class TemperatureDAL:
             select(Temperature)
             .join(City, Temperature.city_id == City.id)
             .filter(City.name.in_(city_names))
+            .options(orm.joinedload(Temperature.city))
+            # load joined city in one query
         )
         return await self._get_temperature_for_(query)
 
     async def get_temperature_for_all_cities(self) -> Optional[List[Temperature]]:
-        query = select(Temperature).join(City, Temperature.city_id == City.id)
+        query = (
+            select(Temperature)
+            .join(City, Temperature.city_id == City.id)
+            .options(orm.joinedload(Temperature.city))
+        )
         return await self._get_temperature_for_(query)
 
     async def set_temperature_for_city(
@@ -47,7 +53,7 @@ class TemperatureDAL:
             city = city.id
 
         query = insert(Temperature).values(
-            min=min, max=max, mean=mean, date=date, city=city
+            min=min, max=max, mean=mean, date=date, city_id=city
         )
 
         await self.session.execute(query)
@@ -62,7 +68,7 @@ class TemperatureDAL:
             city = city.id
 
         query = insert(Temperature).values(
-            [t.to_db_dict() | {"city": city} for t in temperature_list]
+            [t.to_db_dict() | {"city_id": city} for t in temperature_list]
         )
 
         await self.session.execute(query)

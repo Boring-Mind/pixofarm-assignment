@@ -11,7 +11,8 @@ class Continent(BaseModel):
     name = Column(Text, nullable=False, unique=True)
     # Hex representation of continents' color for frontend
     color = Column(Text, nullable=False, unique=True)
-    cities = relationship("City", back_populates="continent")
+
+    __mapper_args__ = {"eager_defaults": True}
 
 
 class Temperature(BaseModel):
@@ -27,7 +28,11 @@ class Temperature(BaseModel):
         ForeignKey("city.id"),
         nullable=False,
     )
-    city = relationship("City", back_populates="temperatures")
+    city = relationship("City")
+
+    # Return default fields after creation.
+    # By default, ORM returns only id of a created object.
+    __mapper_args__ = {"eager_defaults": True}
 
 
 class City(BaseModel):
@@ -43,5 +48,5 @@ class City(BaseModel):
         ForeignKey("continent.id"),
         nullable=False,
     )
-    continent = relationship("Continent", back_populates="cities")
-    temperatures = relationship("Temperature", back_populates="city")
+
+    __mapper_args__ = {"eager_defaults": True}
