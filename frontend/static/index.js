@@ -1,6 +1,8 @@
+const city_names = ["Helsinki", "Sydney", "Los Angeles", "Zhangjiajie"];
+
 const citymap = {
   chicago: {
-    center: { lat: 41.878113, lng: -87.629799, alt: 223},
+    center: { lat: 41.878113, lng: -87.629799, alt: 223 },
   },
   newyork: {
     center: { lat: 40.712776, lng: -74.005974, alt: 58 },
@@ -9,10 +11,10 @@ const citymap = {
     center: { lat: 34.052235, lng: -118.243683, alt: 89 },
   },
   vancouver: {
-    center: { lat: 49.282730, lng: -123.120735, alt: 73 },
+    center: { lat: 49.28273, lng: -123.120735, alt: 73 },
   },
   helsinki: {
-    center: { lat: 60.192059, lng: 24.945831, alt: 7},
+    center: { lat: 60.192059, lng: 24.945831, alt: 7 },
   },
   sydney: { center: { lat: -33.865143, lng: 151.2099, alt: 71 } },
   devonport: { center: { lat: -41.180557, lng: 146.34639, alt: 35 } },
@@ -23,10 +25,45 @@ const citymap = {
   toledo: { center: { lat: 39.856667, lng: -4.024444, alt: 523 } },
   valparaiso: { center: { lat: -33.047237, lng: -71.612686, alt: 18 } },
   gobabis: { center: { lat: -22.449259, lng: 18.969973, alt: 1441 } },
-  bauchi: { center: { lat: 10.306720, lng: 9.844930, alt: 624 } },
+  bauchi: { center: { lat: 10.30672, lng: 9.84493, alt: 624 } },
 };
 
+function getCorrelation() {
+  $.ajax({
+    url: "http://0.0.0.0:8080/temperature/correlation/",
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+  }).done(function (data) {
+    console.log(data);
+  });
+}
+
+function getCityTemperature() {
+  let queryParam = "?";
+  for (const city in city_names) {
+    if (queryParam != "?") {
+      queryParam += `&city_names=${city_names[city]}`;
+    } else {
+      queryParam += `city_names=${city_names[city]}`;
+    }
+  }
+
+  $.ajax({
+    url: "http://0.0.0.0:8080/temperature/cities/" + queryParam,
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+  }).done(function (data) {
+    console.log(data);
+  });
+}
+
+function getData() {
+  getCorrelation();
+  getCityTemperature();
+}
+
 function initMap() {
+  getData();
   var mymap = L.map("map").setView([36.0, 14.1], 2);
 
   L.tileLayer(
