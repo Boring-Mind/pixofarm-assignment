@@ -1,32 +1,57 @@
 const city_names = ["Helsinki", "Sydney", "Los Angeles", "Zhangjiajie"];
-
-const citymap = {
-  chicago: {
-    center: { lat: 41.878113, lng: -87.629799, alt: 223 },
-  },
-  newyork: {
-    center: { lat: 40.712776, lng: -74.005974, alt: 58 },
-  },
-  losangeles: {
-    center: { lat: 34.052235, lng: -118.243683, alt: 89 },
-  },
-  vancouver: {
-    center: { lat: 49.28273, lng: -123.120735, alt: 73 },
-  },
-  helsinki: {
-    center: { lat: 60.192059, lng: 24.945831, alt: 7 },
-  },
-  sydney: { center: { lat: -33.865143, lng: 151.2099, alt: 71 } },
-  devonport: { center: { lat: -41.180557, lng: 146.34639, alt: 35 } },
-  belem: { center: { lat: -1.455833, lng: -48.503887, alt: 15 } },
-  zhangjiajie: { center: { lat: 29.117001, lng: 110.478996, alt: 165 } },
-  makambako: { center: { lat: -8.849012, lng: 34.82806, alt: 1680 } },
-  haiphong: { center: { lat: 20.865139, lng: 106.68383, alt: 9 } },
-  toledo: { center: { lat: 39.856667, lng: -4.024444, alt: 523 } },
-  valparaiso: { center: { lat: -33.047237, lng: -71.612686, alt: 18 } },
-  gobabis: { center: { lat: -22.449259, lng: 18.969973, alt: 1441 } },
-  bauchi: { center: { lat: 10.30672, lng: 9.84493, alt: 624 } },
+const continent_colors = {
+  1: "#15449e",
+  2: "#d48b62",
+  3: "#6c4eb0",
+  4: "#fef301",
+  5: "#e50163",
+  6: "#00a6d6",
 };
+
+const dates_labels = new Set();
+
+var currentChart = undefined;
+
+var city_temp_data = {
+  Helsinki: {
+    min_temp: [],
+    mean_temp: [],
+    max_temp: [],
+    temperature: [],
+    color: "",
+    lat: 0,
+    lng: 0,
+  },
+  Sydney: {
+    min_temp: [],
+    mean_temp: [],
+    max_temp: [],
+    temperature: [],
+    color: "",
+    lat: 0,
+    lng: 0,
+  },
+  "Los Angeles": {
+    min_temp: [],
+    mean_temp: [],
+    max_temp: [],
+    temperature: [],
+    color: "",
+    lat: 0,
+    lng: 0,
+  },
+  Zhangjiajie: {
+    min_temp: [],
+    mean_temp: [],
+    max_temp: [],
+    temperature: [],
+    color: "",
+    lat: 0,
+    lng: 0,
+  },
+};
+
+var currentCity = "";
 
 function getCorrelation() {
   $.ajax({
@@ -34,8 +59,16 @@ function getCorrelation() {
     dataType: "json",
     contentType: "application/json; charset=UTF-8",
   }).done(function (data) {
-    console.log(data);
+    $("#correlation-data").html(data["correlation"]);
   });
+}
+
+function findCityByLatLng(lat, lng) {
+  for (city in city_temp_data) {
+    if (city_temp_data[city].lat == lat && city_temp_data[city].lng == lng) {
+      return city;
+    }
+  }
 }
 
 function getCityTemperature() {
@@ -53,7 +86,26 @@ function getCityTemperature() {
     dataType: "json",
     contentType: "application/json; charset=UTF-8",
   }).done(function (data) {
-    console.log(data);
+    for (entry in data) {
+      let city_name = data[entry].city.name;
+      city_temp_data[city_name].min_temp.push(data[entry].min);
+      city_temp_data[city_name].mean_temp.push(data[entry].mean);
+      city_temp_data[city_name].max_temp.push(data[entry].max);
+      city_temp_data[city_name].temperature.push(data[entry].min);
+      city_temp_data[city_name].temperature.push(data[entry].mean);
+      city_temp_data[city_name].temperature.push(data[entry].max);
+
+      dates_labels.add(new Date(data[entry].date).toLocaleDateString("en-US"));
+
+      city_temp_data[city_name].color =
+        continent_colors[data[entry].city.continent_id.toString()];
+
+      city_temp_data[city_name].lat = data[entry].city.latitude;
+      city_temp_data[city_name].lng = data[entry].city.longitude;
+    }
+
+    setupGraph();
+    initMap();
   });
 }
 
@@ -62,8 +114,53 @@ function getData() {
   getCityTemperature();
 }
 
+function setupGraph() {
+  if (currentCity == "") {
+    $(".weather-data-container").hide();
+    return;
+  }
+
+  if (currentChart != undefined) {
+    currentChart.destroy();
+  }
+
+  $(".weather-data-container").css("display", "flex");
+
+  const labels = Array.from(dates_labels);
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Temperature (min)",
+        backgroundColor: "#264B96",
+        borderColor: "#264B96",
+        data: city_temp_data[currentCity].min_temp,
+      },
+      {
+        label: "Temperature (mean)",
+        backgroundColor: "#F9A73E",
+        borderColor: "#F9A73E",
+        data: city_temp_data[currentCity].mean_temp,
+      },
+      {
+        label: "Temperature (max)",
+        backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgb(255, 99, 132)",
+        data: city_temp_data[currentCity].max_temp,
+      },
+    ],
+  };
+
+  const config = {
+    type: "line",
+    data: data,
+    options: { responsive: true },
+  };
+
+  currentChart = new Chart(document.getElementById("chart"), config);
+}
+
 function initMap() {
-  getData();
   var mymap = L.map("map").setView([36.0, 14.1], 2);
 
   L.tileLayer(
@@ -80,41 +177,29 @@ function initMap() {
     }
   ).addTo(mymap);
 
-  const contentString =
-    '<div id="content">' +
-    '<div id="siteNotice">' +
-    "</div>" +
-    '<h1 id="firstHeading" class="firstHeading">Uluru</h1>' +
-    '<div id="bodyContent">' +
-    "<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large " +
-    "sandstone rock formation in the southern part of the " +
-    "Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) " +
-    "south west of the nearest large town, Alice Springs; 450&#160;km " +
-    "(280&#160;mi) by road. Kata Tjuta and Uluru are the two major " +
-    "features of the Uluru - Kata Tjuta National Park. Uluru is " +
-    "sacred to the Pitjantjatjara and Yankunytjatjara, the " +
-    "Aboriginal people of the area. It has many springs, waterholes, " +
-    "rock caves and ancient paintings. Uluru is listed as a World " +
-    "Heritage Site.</p>" +
-    '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">' +
-    "https://en.wikipedia.org/w/index.php?title=Uluru</a> " +
-    "(last visited June 22, 2009).</p>" +
-    "</div>" +
-    "</div>";
-
-  for (const city in citymap) {
+  for (const city in city_names) {
     let circle = L.circle(
-      [citymap[city].center["lat"], citymap[city].center["lng"]],
+      [
+        city_temp_data[city_names[city]].lat,
+        city_temp_data[city_names[city]].lng,
+      ],
       {
-        color: "red",
-        fillColor: "#f03",
+        color: city_temp_data[city_names[city]].color,
+        fillColor: city_temp_data[city_names[city]].color,
         fillOpacity: 0.5,
-        radius: 10000,
+        radius: 50000,
       }
-    ).addTo(mymap);
-
-    circle.bindPopup(contentString);
+    )
+      .addTo(mymap)
+      .on("click", function (e) {
+        currentCity = findCityByLatLng(e.latlng.lat, e.latlng.lng);
+        setupGraph();
+      });
   }
 }
 
-document.addEventListener("DOMContentLoaded", initMap, false);
+function main() {
+  getData();
+}
+
+document.addEventListener("DOMContentLoaded", main, false);
