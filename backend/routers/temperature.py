@@ -36,7 +36,7 @@ async def get_correlation_between_temperature_and_altitude(
     redis: Redis = Depends(redis_instance),
 ):
     if cached_result := await redis.get(Settings.CORRELATION_CACHE_KEY):
-        return cached_result
+        return {"correlation": round(float(cached_result), 4)}
 
     result = await Correlation.get_correlation_between_altitude_and_temperature(
         db_session
